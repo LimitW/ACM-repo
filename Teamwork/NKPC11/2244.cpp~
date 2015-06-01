@@ -1,0 +1,42 @@
+#include <iostream>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cmath>
+#include <string>
+#include <vector>
+#include <list>
+#include <map>
+#include <set>
+#include <queue>
+#include <stack>
+#include <utility>
+#include <bitset>
+#include <algorithm>
+
+using namespace std;
+
+#define LL long long
+#define pii pair<int,int>
+
+const int INF = 0x3f3f3f3f;
+
+const int maxn = 1e5+2;
+
+// Nx + -My = K - val  , y <= P , min(val)?
+
+void exgcd(int a,int b,int& d,int& x,int& y){
+	if(!b) { d = a; x = 1; y = 0; }
+	else { exgcd(b,a%b,d,y,x); y -= x*(a/b); }
+}
+
+int main(){
+	int n,m,k,p;
+	while(~scanf("%d%d%d%d",&k,&n,&m,&p)){
+		int d,x,y;		
+		exgcd(n,-m,d,x,y);
+		if(x < 0 && y < 0) d *= -1;
+	}
+    return 0;
+}

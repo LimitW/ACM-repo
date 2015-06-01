@@ -1,0 +1,73 @@
+//============================================================================
+// Name        : Template.cpp
+// Author      : LimitW
+// Date        :
+// Version     :
+// Copyright   :
+// Description :
+//============================================================================
+
+#include <iostream>
+#include <iomanip>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <string>
+#include <vector>
+#include <list>
+#include <map>
+#include <set>
+#include <queue>
+#include <stack>
+#include <utility>
+#include <bitset>
+#include <functional>
+#include <algorithm>
+#include <fstream>
+
+using namespace std;
+
+#define LL long long
+#define pii pair<int,int>
+const int INF = 0x3f3f3f3f;
+
+class PerfectPermutationHard{
+public:
+	bool vis[60];
+	vector<int> reorder(vector<int> P){
+		int n = P.size();
+		vector<int> Q[50];
+		int tmp = 0 , c = 0;
+		vector<int> t = P;
+		vector<int>::iterator it;
+		for(it = Q.begin(); it != Q.end(); it++)
+			if(*it == 0) { Q.erase(it); break; }
+		Q[0].push_back(0);
+		while(t.size())
+		{
+			if(tmp == Q[c][0]){
+				if(t.size()) Q[c++].push_back(t[0]); 
+				continue;
+			}
+			for(it = t.begin(); it != t.end(); it++){
+				if(*it == P[tmp]) { Q.erase(it); break; }
+			}
+			tmp = P[tmp];
+		}
+		if(c == 1) return P;
+		vector<int> ans;
+		int i;
+		for(i = 0; i < Q[0].size() && Q[0][i] < Q[1][0]; i++)
+			ans.push_back(Q[0][i]);
+		for(int j = 1; j < c; j++)
+			ans.insert(ans.end(),Q[i].begin(),Q[i].end());
+		for(; i < Q[0].size(); i++)
+			ans.push_back(Q[0][i]);
+		vector<int> ans2(n);
+		for(i = 0; i < n; i++)
+			ans2[ans[i]] = ans[(i+1)%n];
+		return ans2;
+	}
+};
+
