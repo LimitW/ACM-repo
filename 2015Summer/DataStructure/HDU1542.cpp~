@@ -1,4 +1,3 @@
-//Segment Tree Scanline
 #include <iostream>
 #include <cstring>
 #include <cstdio>
