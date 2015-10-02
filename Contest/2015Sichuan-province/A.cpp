@@ -21,17 +21,28 @@ using namespace std;
 #define pii pair<int,int>
 
 const int INF = 0x3f3f3f3f;
+const double pi = acos(-1.0);
+const long double eps = 1e-9;
+
+const int maxn = 1e9 + 1;
+
+map<int, int> mp;
 
 int main(){
-	long long n,m,k;
-	while(~scanf("%lld%lld%lld",&n,&m,&k)){
-		long long pow2 = pow(2.0,m);
-		long long res = k - pow2 * 2 * n , ans = k - 2*n;
-		if(res > 0) {
-			ans += 2 * ((res % pow2 == 0) ? (res / pow2) : (1 + res / pow2));
-			if(ans > 1e16) ans = -1;
+	mp.clear();
+	for(int i = 0; i * i < maxn; ++i){
+		++mp[i*i];
+	}
+	int n;
+	while(~scanf("%d", &n)){
+		bool fail = 0;
+		for(int i = 0; i < n; ++i){
+			int v; scanf("%d", &v);
+			if(mp.find(v) == mp.end())
+				fail = 1;
 		}
-		printf("%lld\n",ans);
+		if(fail) puts("No");
+		else puts("Yes");
 	}
     return 0;
 }

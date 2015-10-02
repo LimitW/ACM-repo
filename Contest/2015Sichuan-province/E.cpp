@@ -21,22 +21,21 @@ using namespace std;
 #define pii pair<int,int>
 
 const int INF = 0x3f3f3f3f;
+const double pi = acos(-1.0);
+const long double eps = 1e-9;
 
-const int maxn = 1e5+2;
-
-// Nx + -My = K - val  , y <= P , min(val)?
-
-void exgcd(int a,int b,int& d,int& x,int& y){
-	if(!b) { d = a; x = 1; y = 0; }
-	else { exgcd(b,a%b,d,y,x); y -= x*(a/b); }
-}
+const int maxn = 1e5 + 1;
 
 int main(){
-	int n,m,k,p;
-	while(~scanf("%d%d%d%d",&k,&n,&m,&p)){
-		int d,x,y;		
-		exgcd(n,-m,d,x,y);
-		if(x < 0 && y < 0) d *= -1;
+	LL n, m, k, x, y;
+	while(~scanf("%lld%lld%lld", &n, &m, &k)){
+		k >>= 1;
+		LL ans = 0;
+		for(LL w = 1; w < min(k, n + 1); ++w){
+			LL h = min(k - w, m);
+			ans += (n - w + 1) * (m * h + h - h * (h + 1) / 2);
+		}
+		cout << ans << '\n';
 	}
     return 0;
 }
