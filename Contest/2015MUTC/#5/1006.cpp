@@ -1,140 +1,83 @@
-#pragma comment(linker, "/STACK:1024000000,1024000000")
-
-#include <iostream>
-#include <cstring>
-#include <cstdio>
-#include <cstdlib>
-#include <cctype>
-#include <cmath>
-#include <string>
-#include <vector>
-#include <list>
-#include <map>
-#include <set>
-#include <queue>
-#include <stack>
-#include <utility>
-#include <bitset>
-#include <algorithm>
+#include <bits/stdc++.h>
 
 using namespace std;
 
-#define LL long long
-#define pii pair<int,int>
+const int maxn = 3e5 + 3;
 
-const int INF = 0x3f3f3f3f;
-const LL INFL = 0x3f3f3f3f3f3f3f3fLL;
-const int mod = 1e9 + 7;
-const int maxn = 1e5 + 3;
-const int maxm = 3e5 + 3;
+int n, m;
 
-int dir[4][2] = {{-1,0},{1,0},{0,-1},{0,1}};
+struct Edge{
+	int v, nxt;
+}E[maxn<<1];
 
+int head[maxn], e;
 
-struct edge{
-	int u,v,id;
-	bool operator < (edge p) const {
-		return u < p.u || (u == p.u && v < p.v);
-	}
-	bool operator == (edge p) const{
-		return (u == p.u && v == p.v) || (u == p.v && v == p.u);
-	}
-}E[maxm];
-
-
-int e;
-bool ans[maxm], vis[maxm], tag[maxn];
-int n,m;
-
-int head[maxn];
-pii nxt[maxm];
-
-vector<int> cp;
-
-void init(){
-	e = 0;
-	memset(head,-1,sizeof(head));
-	memset(vis,0,sizeof(vis));
-	memset(tag,0,sizeof(tag));
-	memset(ans,0,sizeof(ans));
-	cp.clear();
+void AddEdge(int u, int v){
+	E[e].v = v, E[e].nxt = head[u], head[u] = e++;
+	E[e].v = u, E[e].nxt = head[v], head[v] = e++;
 }
 
-void multiedge(){
-	sort(E,E+e);
-	for(int i = 1; i < e; ++i){
-		if(E[i] == E[i-1]){
-			int cnt = 2;
-			vis[E[i].id] = 1;
-			for(int j = i + 1; j < e; ++j){
-				if(E[j] == E[j-1]) {
-					++cnt;
-					ans[E[j].id] = ans[E[j-1].id] ^ 1;
-					vis[E[j].id] = 1;
-				}
-				else { i = j - 1; break; }
-			}
-			if(!(cnt & 1)){
-				vis[E[i-1].id] = 1;
-				ans[E[i-1].id] = ans[E[i].id] ^ 1;
-			}
+int vis[maxn<<1], ans[maxn];
+int in[maxn], out[maxn];
+
+void dfs(int u){
+	for(int i = head[u]; ~i; i = E[i].nxt){
+		if(vis[i]){
+			head[u] = E[i].nxt;
+			continue;
 		}
+		if(u != E[i].v && in[E[i].v] > out[E[i].v]) continue;
+		head[u] = E[i].nxt;
+		++out[u], ++in[E[i].v];
+		vis[i] = vis[i^1] = 1;
+		ans[i>>1] = !(i & 1);
+		dfs(E[i].v);
+		return;
 	}
 }
-/*
-void cycle(int u,int pre = -1){
-	tag[u] = 1;
-	bool cannxt = 0;
-	for(int i = 0; i < G[u].size(); ++i){
-		pii nxt = G[u][i];
-		int eid = nxt.second, v = nxt.first;
-		if(vis[eid] || (pre != -1 && E[pre].u == v)) continue;
-		cannxt = 1;
-		cp.push_back(eid);
-		if(tag[v]){
-			for(int ee = 0; ee < cp.size(); ++ee)
-				vis[ee] = 1;
-			cp.clear();
-		}
-		cycle(v,eid);
-	}
-	if(!cannxt) cp.pop_back();
-	tag[u] = 0;
-}*/
 
-void dfs(int u,int pre = -1,int flag = 0){
-	for(int i = 0; i < G[u].size(); ++i){
-		pii nxt = G[u][i];
-		int eid = nxt.second, v = nxt.first;
-		if(vis[eid] || (pre != -1 && E[pre].u == v)) continue;
-		vis[eid] = 1;
-		ans[eid] = flag;
-		dfs(v,eid,flag);
-		flag ^= 1;
+
+void dfs2(int u){
+	for(int i = head[u]; ~i; i = E[i].nxt){
+		if(vis[i]){
+			head[u] = E[i].nxt;
+			continue;
+		}
+		if(u != E[i].v && out[E[i].v] > in[E[i].v]) continue;
+		head[u] = E[i].nxt;
+		++in[u], ++out[E[i].v];
+		vis[i] = vis[i^1] = 1;
+		ans[i>>1] = (i & 1);
+		dfs2(E[i].v);
+		return;
 	}
 }
+
+int num[maxn];
 
 int main(){
-	int T; scanf("%d",&T);
+	int T; scanf("%d", &T);
 	while(T--){
-		scanf("%d%d",&n,&m);
-		init();
+		e = 0;
+		memset(head, -1, sizeof(head));
+		memset(num, 0, sizeof(num));
+		memset(in, 0, sizeof(in));
+		memset(out, 0, sizeof(out));
+		memset(vis, 0, sizeof(vis));
+		scanf("%d%d", &n, &m);
 		for(int i = 0; i < m; ++i){
-			int uu,vv;
-			scanf("%d%d",&uu,&vv);
-			if(uu == vv) continue;
-			E[e].u = uu, E[e].v = vv, E[e++].id = i;
+			int u, v; scanf("%d%d", &u, &v);
+			AddEdge(--u, --v);
+			num[u]++, num[v]++;
 		}
-		multiedge();
-		ee = 0;
-		for(int i = 0; i < e; ++i){
-			if(vis[E[i].id]) continue;
-			addedge(E[i]);
+		for(int i = 0; i < n; ++i){
+			while(in[i] + out[i] < num[i])
+				if(in[i] >= out[i]) dfs(i);
+				else dfs2(i);
 		}
-	//	cycle(1);
-		dfs(1);
-		for(int i = 0; i < m; ++i)
-			printf("%d\n",ans[i]);
+		for(int i = 0; i < m; ++i){
+			printf("%d\n", ans[i]);
+		}
 	}
 	return 0;
 }
